@@ -1,0 +1,79 @@
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const cors = require("cors"); 
+const session = require("express-session");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+let obj = {}
+app.use(session({
+    secret:'munishwar',
+    resave:true,
+    saveUninitialized:true,
+}))
+app.use(cors({
+    origin: "http://localhost:5173/",
+    methods: "GET,POST",
+    })
+)
+mongoose.connect("mongodb://localhost:27017/whatsapp-data")
+    .then(() => console.log("connection established"))
+    .catch((err) => console.log(err));
+
+const userSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true,
+    }
+}, { timestamps: true })
+
+const user = mongoose.model("user", userSchema);
+
+app.post("/user/signup", async (req, res) => {
+    const body = req.body;
+    const result = await user.create({
+        name: body.name,
+        email: body.email,
+        password: body.password
+    })
+     return res.status(200).json({msg:"data stored successfully"}) ;
+}) 
+
+app.post("/user/login", async (req, res) => {
+    const body = req.body;
+    console.log(body)
+    const result = await user.findOne({email: body.email, password: body.password});
+    console.log(result)
+    if(!result) { 
+        return res.status(404).json({ msg: "Invalid user" });
+    } 
+    let uid = result._id
+    let obj ={
+        userid:uid,
+        email:body.email,
+        password:body.password
+    }
+    req.session.user=obj;
+    req.session.save()
+    console.log(obj)
+    return res.status(200).json({ msg: "user login successfully",id:uid });
+}) 
+app.get("/",(req,res) => {
+    console.log(req.session,req.session?.email,req.session.user)
+    if (req.session.user){
+         res.json({state :true});
+    }
+    else{
+        res.json({ state: false });
+    }
+})
+app.listen(8000, () => console.log("server is running on port 8000"));
