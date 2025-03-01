@@ -25,31 +25,3 @@ module.exports = { verifyToken };
 
 
 
-
-// const jwt = require("jsonwebtoken");
-// const JWT_SECRET = "munishwar";
-
-// function verifyToken(req, res, next) {
-//     const token = req.cookies.token; // Retrieve token from cookies
-//     console.log("JWT token ",token)
-
-//     if (!token) {
-//         return res.status(403).json({ msg: "Access Denied: No token provided" });
-//     }
-
-//     try {
-//         const decoded = jwt.verify(token, JWT_SECRET,(err,user)=>{
-//             if(err)
-//                 console.log(err);
-//             else{
-//                 req.user = decoded; // Attach user info to request
-//                 console.log("decoded token",req.user);
-//                 next();
-//             }
-//         });
-//     } catch (error) {
-//         return res.status(401).json({ msg: "Invalid or expired token" });
-//     }
-// }
-
-// module.exports ={ verifyToken } ;

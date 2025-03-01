@@ -1,5 +1,6 @@
 const user = require("../models/user");
 const jwt = require("jsonwebtoken");
+const {verityToken} = require("../middleware/auth");
 const JWT_SECRET = "munishwar";
 
 async function handleSignupUser(req, res) {
@@ -35,6 +36,16 @@ async function handleLoginUser(req, res) {
     return res.status(200).json({ msg: "user login successfully" });
 }
 
+async function  handleLoginUserChat(req,res){
+    try {
+        const loggedInUserId = req.user.id;
 
+        const chats = await user.find({ _id: { $ne: loggedInUserId } });
+        res.json(chats);
+    } catch (error) {
+        console.error("Error fetching chats:", error);
+        res.status(500).json({ msg: "Server error" });
+    }
+}
 
-module.exports = { handleSignupUser, handleLoginUser };
+module.exports = { handleSignupUser, handleLoginUser , handleLoginUserChat};
