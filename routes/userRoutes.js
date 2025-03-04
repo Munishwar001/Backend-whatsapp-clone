@@ -31,12 +31,13 @@ router.post("/send-message", verifyToken, async (req, res) => {
 
 router.get("/messages/:chatId", verifyToken, async (req, res) => {
     try {
-        const chatId = req.params.chatId; // Get the chat ID from URL
+        const receiver = req.params.chatId;
+        const sender =  req.user.id    
         const messages = await Message.find({ 
-            $or: [ { sender: chatId }, { receiver: chatId } ] 
+            $or: [ { sender: sender , receiver: receiver } ,{ sender: receiver , receiver: sender } ] 
         }).populate("sender receiver", "name"); // Populate sender and receiver details
         
-        res.status(200).json(messages);
+        res.status(200).send(messages);
     } catch (error) {
         console.error("Error fetching messages:", error);
         res.status(500).json({ msg: "Server error" });
