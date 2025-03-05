@@ -7,27 +7,27 @@ const {verifyToken} = require("../middleware/auth");
 router.post("/user/signup",handleSignupUser);
 router.post("/user/login",handleLoginUser);
 router.get("/chats", verifyToken, handleLoginUserChat);
-router.post("/send-message", verifyToken, async (req, res) => { 
-    console.log("hello world ");
+// router.post("/send-message", verifyToken, async (req, res) => { 
+//     console.log("hello world ");
     
-    try {
-        const { receiver, message } = req.body;
-         console.log("Receiver" , receiver , "Message" , message);
+//     try {
+//         const { receiver, message } = req.body;
+//          console.log("Receiver" , receiver , "Message" , message);
          
-        const newMessage = new Message({
-            sender: req.user.id,  
-            receiver,
-            message
-        });
+//         const newMessage = new Message({
+//             sender: req.user.id,  
+//             receiver,
+//             message
+//         });
         
-        await newMessage.save();  
-        res.status(201).json({ msg: "Message sent successfully" });
+//         await newMessage.save();  
+//         res.status(201).json({ msg: "Message sent successfully" });
 
-    } catch (error) {
-        console.error("Error sending message:", error);
-        res.status(500).json({ msg: "Server error" });
-    }
-}); 
+//     } catch (error) {
+//         console.error("Error sending message:", error);
+//         res.status(500).json({ msg: "Server error" });
+//     }
+// }); 
 
 router.get("/messages/:chatId", verifyToken, async (req, res) => {
     try {

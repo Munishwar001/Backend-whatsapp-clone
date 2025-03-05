@@ -41,8 +41,9 @@ async function  handleLoginUserChat(req,res){
     try {
         const loggedInUserId = req.user.id;
 
-        const chats = await user.find({ _id: { $ne: loggedInUserId } });
-        res.json(chats);
+        const chats = await user.find({ _id: { $ne: loggedInUserId } }); 
+        console.log("loggedUser",req.user);
+        res.json({chats :chats , loggedUser : req.user})
     } catch (error) {
         console.error("Error fetching chats:", error);
         res.status(500).json({ msg: "Server error" });
