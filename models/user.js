@@ -13,10 +13,10 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true,
-    }, messages: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Message" 
-    }]
+    }, dp: {
+        type: String ,
+        default: "" 
+    }
 }, { timestamps: true })
 
 const user = mongoose.model("user", userSchema);
