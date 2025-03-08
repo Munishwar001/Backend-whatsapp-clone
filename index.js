@@ -26,6 +26,9 @@ app.use(cors({
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        if (req.url =="/upload/img")
+            cb(null, "uploads/img/"); // store the files in upload folder through multer 
+        else
         cb(null, "uploads/"); // Store files in "uploads" folder
     },
     filename: function (req, file, cb) {
@@ -48,6 +51,8 @@ const upload = multer({
 });
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads/img", express.static(path.join(__dirname, "uploads/img")));
+
 
 // for adding the image to the database
 app.post("/upload", verifyToken, upload.single("profilePic"), async (req, res) => {
@@ -73,6 +78,22 @@ app.post("/upload", verifyToken, upload.single("profilePic"), async (req, res) =
 });
 
 
+app.post("/upload/img", verifyToken, upload.single("MsgPic"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded!" });
+        }
+
+        const imageUrl = `http://localhost:8000/uploads/img/${req.file.filename}`;
+
+        res.status(200).json({ imageUrl: imageUrl});
+    } catch (error) {
+        console.error("Error uploading message image:", error);
+        res.status(500).json({ message: "Internal server error!" });
+    }
+});
+
+
 
 const http = createServer(app);
 const io = new Server(http,{
@@ -91,14 +112,17 @@ io.on("connection",(socket)=>{
         userSocket[userId] = socket.id ;
          console.log("userSocket",userSocket);
      }) 
-     socket.on("sendMessage", async({sender,receiver, message})=>{
+    socket.on("sendMessage", async ({ sender, receiver, message})=>{
         try{
-            console.log("sender ",sender,"receiver",receiver,"message",message);
+            console.log("sender ", sender, "receiver", receiver, "message", message);
             const newMessage = await  Message.create({
             sender, 
             receiver,
-            message
+            message 
         });
+
+        if(message=="")
+            return ;
         const receiverSocketId = userSocket[receiver];
         if(receiverSocketId){
            io.to(receiverSocketId).emit("receiveMessage", message);
