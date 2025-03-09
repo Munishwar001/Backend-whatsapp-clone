@@ -16,6 +16,10 @@ const userSchema = mongoose.Schema({
     }, dp: {
         type: String ,
         default: "" 
+    },
+    active:{
+        type:Boolean ,
+        default:false
     }
 }, { timestamps: true })
 

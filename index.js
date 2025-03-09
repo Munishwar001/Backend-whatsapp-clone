@@ -109,8 +109,11 @@ io.on("connection",(socket)=>{
 
     socket.on("register", async (userId)=>{
         console.log("registered users");
-        userSocket[userId] = socket.id ;
-         console.log("userSocket",userSocket);
+        userSocket[userId] = socket.id ; 
+        console.log("UserId edrfgthyjukmgfdsxcvffec5y6bui" , userSocket);
+         const activeUser = await user.findByIdAndUpdate(userId , {active:true} , {new:true}); 
+         console.log(activeUser);
+
      }) 
     socket.on("sendMessage", async ({ sender, receiver, message})=>{
         try{
@@ -131,6 +134,20 @@ io.on("connection",(socket)=>{
         catch{
             console.log("hello world");
         }
+     })
+
+     socket.on("disconnect",async ()=>{
+        console.log("user disconnected");
+         const userId = Object.keys(userSocket).find(key => userSocket[key] === socket.id);
+
+
+         if (userId) {
+             delete userSocket[userId];
+             console.log("User removed from socket map:", userSocket);
+
+             await user.findByIdAndUpdate(userId, { active: false });
+             console.log(`User ${userId} marked offline`);
+         }
      })
      
 }) 
