@@ -11,6 +11,7 @@ const {createServer} = require("http");
 const {user , Message} = require("./models/user")
 const multer = require("multer");
 const path = require("path");
+const { log } = require("console");
 
 
 // MiddleWare
@@ -104,17 +105,22 @@ const io = new Server(http,{
     }
 })  
 const userSocket = {};
+const onlineUser = [];
 io.on("connection",(socket)=>{
      console.log(`user connected ${socket.id}`);
 
     socket.on("register", async (userId)=>{
-        console.log("registered users");
+        // console.log("registered users");
         userSocket[userId] = socket.id ; 
-        console.log("UserId edrfgthyjukmgfdsxcvffec5y6bui" , userSocket);
-         const activeUser = await user.findByIdAndUpdate(userId , {active:true} , {new:true}); 
-         console.log(activeUser);
+        console.log("UserSocket" , userSocket);
+        if (!(onlineUser.includes(userId))){
+            onlineUser.push(userId);
+        }
+        console.log("onlineUser" , onlineUser);
+        
+        io.emit("online", onlineUser);
+    }) 
 
-     }) 
     socket.on("sendMessage", async ({ sender, receiver, message})=>{
         try{
             console.log("sender ", sender, "receiver", receiver, "message", message);
@@ -139,14 +145,13 @@ io.on("connection",(socket)=>{
      socket.on("disconnect",async ()=>{
         console.log("user disconnected");
          const userId = Object.keys(userSocket).find(key => userSocket[key] === socket.id);
-
-
+          console.log(userId);
          if (userId) {
              delete userSocket[userId];
-             console.log("User removed from socket map:", userSocket);
-
-             await user.findByIdAndUpdate(userId, { active: false });
-             console.log(`User ${userId} marked offline`);
+             onlineUser.splice(onlineUser.indexOf(userId), 1);
+              console.log("onlineUser" , onlineUser);
+              console.log(`User ${userId} marked offline`);
+              io.emit("online", onlineUser);
          }
      })
      
