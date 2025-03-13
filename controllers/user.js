@@ -1,6 +1,6 @@
 const {user , Message}= require("../models/user");
 const jwt = require("jsonwebtoken");
-const {verityToken} = require("../middleware/auth");
+
 const JWT_SECRET = "munishwar";
 
 async function handleSignupUser(req, res) {

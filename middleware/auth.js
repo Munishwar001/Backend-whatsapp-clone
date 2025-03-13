@@ -3,7 +3,6 @@ const JWT_SECRET = "munishwar";
 
 function verifyToken(req, res, next) {
     const token = req.cookies.token;
-    // console.log("JWT token: ", token);
 
     console.log("req.cookies.token  ",req.cookies.token);
     if (!token) {

@@ -17,10 +17,13 @@ const userSchema = mongoose.Schema({
         type: String ,
         default: "" 
     },
-    active:{
-        type:Boolean ,
-        default:false
+    otp:{
+        type: Number
+    },
+    otpExpire:{
+        type:Date
     }
+
 }, { timestamps: true })
 
 const user = mongoose.model("user", userSchema);
