@@ -16,13 +16,15 @@ async function handleSignupUser(req, res) {
 
 async function handleLoginUser(req, res) {
     const { email, password } = req.body;
+    console.log("email :" ,email , password);
     const result = await user.findOne({ email });
     if (!result) {
-        return res.status(404).json({ msg: "Invalid user" });
+        return res.status(404).json({ success: false, msg: "Invalid user" });
+
     }
     const isMatch = (result.password === password);
     if (!isMatch) {
-        return res.status(404).json({ msg: "Invalid credentials" });
+        return res.status(404).json({ success: false, msg: "Invalid credentials" });
     }
     const token = jwt.sign({ id: result._id, email: result.email }, JWT_SECRET, { expiresIn: "1h" });
     console.log("token ", token);
@@ -34,7 +36,7 @@ async function handleLoginUser(req, res) {
         maxAge: 60 * 60 * 1000
     });
 //    console.log("JWT token received in cookies: ", req.cookies.token);
-    return res.status(200).json({ msg: "user login successfully" });
+    return res.status(200).json({ success: true, msg: "User login successfully" });
 }
 
 async function  handleLoginUserChat(req,res){

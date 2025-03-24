@@ -3,6 +3,7 @@ const router = express.Router();
 const{handleSignupUser ,handleLoginUser , handleLoginUserChat} = require("../controllers/user");
 const {user , Message}= require("../models/user");
 const {verifyToken} = require("../middleware/auth");
+const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "munishwar";
 
@@ -32,6 +33,34 @@ router.post("/forgot-password", async (req,res)=>{
             sameSite: "lax",
             maxAge: 60 * 60 * 1000
         });
+
+const transporter = nodemailer.createTransport({
+//   host: "smtp.ethereal.email",
+  service:"gmail",
+//   port: 587,
+//   secure: false, // true for port 465, false for other ports
+  auth: {
+    user: "kalramunishwar@gmail.com",
+    pass: "imspllnjntyugjfk",
+  },
+});
+   async function main() {
+  // send mail with defined transport object
+  const info = await transporter.sendMail({
+    from: '"WhatsApp OTP Service" <Kalramunishwar@gmail.com>',
+    to: email,
+    subject: "Your WhatsApp OTP Code",
+    text: `Your OTP for WhatsApp verification is: ${otp}. It is valid for 5 minutes.`,
+    html: `<p><strong>Your OTP for WhatsApp verification is:</strong> <span style="color:blue;font-size:20px;">${otp}</span></p><p>It is valid for 5 minutes.</p>`,
+    
+  });
+
+  console.log("Message sent: %s", info.messageId);
+  // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
+}
+
+main().catch(console.error);
+//   res.json({message:"Email sent successfully"})
     console.log(`Your OTP is: ${otp} (valid for 5 minutes)`);
     res.json({ message: "OTP has been sent to your console." });
 }catch (err){ 
@@ -39,6 +68,8 @@ router.post("/forgot-password", async (req,res)=>{
   res.status(500).json({ message: "Internal Server Error" });
 }
 }) 
+
+
 router.post("/reset-password",async (req,res)=>{
  try{ 
     const {otp,newPassword} = req.body;
