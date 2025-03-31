@@ -18,8 +18,8 @@ Before running the project, ensure you have the following installed:
 ### 1️⃣ Clone the Repository
 Run the following command to clone the project and navigate into it:
 ```sh
-git clone https://github.com/yourusername/whatsapp-clone-backend.git
-cd whatsapp-clone-backend
+git clone [https://github.com/Munishwar001/Backend-whatsapp-clone.git]
+cd Backend-whatsapp-clone
 ```
 
 ### 2️⃣ Install Dependencies
