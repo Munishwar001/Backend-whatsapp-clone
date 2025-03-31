@@ -8,11 +8,9 @@ const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 const { verifyToken } = require("./middleware/auth"); 
 const {createServer} = require("http");
-const {user , Message} = require("./models/user")
+const { user, Message } = require("./models/user");
 const multer = require("multer");
 const path = require("path");
-const { log } = require("console");
-
 
 // MiddleWare
 app.use(express.json());
@@ -53,7 +51,6 @@ const upload = multer({
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/uploads/img", express.static(path.join(__dirname, "uploads/img")));
-
 
 // for adding the image to the database
 app.post("/upload", verifyToken, upload.single("profilePic"), async (req, res) => {
@@ -156,17 +153,6 @@ io.on("connection",(socket)=>{
      })
      
 }) 
-
-
-app.use("/protected", verifyToken, (req, res) => {
-    if (req.user) {
-        res.json({ status: 'validated' });
-    }
-    else {
-        const http = createServer(app); 
-        res.json({ status: "Failed" })
-    }
-});
 
 app.use("/", userRouter);
 
