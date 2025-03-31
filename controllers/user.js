@@ -1,7 +1,7 @@
 const {user , Message}= require("../models/user");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const JWT_SECRET = "munishwar";
+const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
 
 async function handleProtected(req, res) {
@@ -91,18 +91,18 @@ async function handleForgotPassword(req,res) {
 
 const transporter = nodemailer.createTransport({
 //   host: "smtp.ethereal.email",
-  service:"gmail",
+  service:process.env.Transporter_Service,
 //   port: 587,
 //   secure: false, // true for port 465, false for other ports
   auth: {
-    user: "kalramunishwar@gmail.com",
-    pass: "imspllnjntyugjfk",
+    user: process.env.EMAIL,
+    pass: process.env.pass,
   },
 });
    async function main() {
   // send mail with defined transport object
   const info = await transporter.sendMail({
-    from: '"WhatsApp OTP Service" <Kalramunishwar@gmail.com>',
+    from: `"WhatsApp OTP Service" <${process.env.EMAIL}>`,
     to: email,
     subject: "Your WhatsApp OTP Code",
     text: `Your OTP for WhatsApp verification is: ${otp}. It is valid for 5 minutes.`,

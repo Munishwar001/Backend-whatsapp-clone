@@ -1,4 +1,5 @@
 // Requiring
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -11,13 +12,12 @@ const {createServer} = require("http");
 const { user, Message } = require("./models/user");
 const multer = require("multer");
 const path = require("path");
-
 // MiddleWare
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: `${process.env.URL}`,
     methods: ["GET","POST"],
     credentials: true, // Allow cookies & auth headers
 })
@@ -59,7 +59,7 @@ app.post("/upload", verifyToken, upload.single("profilePic"), async (req, res) =
             return res.status(400).json({ message: "No file uploaded!" });
         }
 
-         const imageUrl = `http://localhost:8000/uploads/${req.file.filename}`;
+         const imageUrl = `${process.env.IMAGE_URL}${req.file.filename}`;
 
         // Find the logged-in user and update their profile pic
         const updatedUser = await user.findByIdAndUpdate(req.user.id, { dp: imageUrl }, { new: true });
@@ -96,7 +96,7 @@ app.post("/upload/img", verifyToken, upload.single("MsgPic"), async (req, res) =
 const http = createServer(app);
 const io = new Server(http,{
     cors:{
-        origin:"http://localhost:5173",
+        origin:`${process.env.URL}`,
         methods :["GET","POST"],
         credentials: true,
     }
@@ -150,14 +150,14 @@ io.on("connection",(socket)=>{
               console.log(`User ${userId} marked offline`);
               io.emit("online", onlineUser);
          }
-     })
+})
      
 }) 
 
 app.use("/", userRouter);
 
 // Connect to MongoDB 
-mongoose.connect("mongodb://localhost:27017/whatsapp-data")
+mongoose.connect(`${process.env.MONGO_URL}whatsapp-data`)
     .then(() => console.log("🚀 connection established with MongoDB"))
     .catch((err) => console.log(err));
 
